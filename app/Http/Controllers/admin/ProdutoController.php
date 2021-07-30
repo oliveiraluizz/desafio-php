@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 class ProdutoController extends Controller
 {
+    
 
     //metodo para listar os produtos
     public function index(){
