@@ -14,8 +14,7 @@ class produto extends Model
         'categoria',
         'nome',
         'preco',
-        'compisicao',
-        'dataCadastro',
+        'composicao',    
         'tamanho',
         'qtdProduto'
 
