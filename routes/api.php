@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImagemController;
 use App\Http\Controllers\ProdutoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,3 +30,5 @@ use Illuminate\Support\Facades\Route;
 // Route::delete('/admin/produtos/{codigo}', [ProdutoController::class, 'deletar']);
 
 Route::apiResource('/admin/produto', ProdutoController::class);
+
+Route::apiResource('/admin/imagem', ImagemController::class);

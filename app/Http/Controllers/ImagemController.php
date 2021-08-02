@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\produto;
+use App\Models\imagem;
 use Illuminate\Http\Request;
 
-class ProdutoController extends Controller
+class ImagemController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,20 +14,16 @@ class ProdutoController extends Controller
      */
     public function index()
     {
-        $registros = produto::with('imagens')->get()->all();
+        $registros = imagem::all();
         return json_encode($registros);
     }
 
-    // /**
-    //  * Show the form for creating a new resource.
-    //  *
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function create()
-    // {
-    //     //
-    // }
-
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+  
     /**
      * Store a newly created resource in storage.
      *
@@ -36,14 +32,22 @@ class ProdutoController extends Controller
      */
     public function store(Request $request)
     {
+        
+        
+        $imanges_qtd = imagem::where('produto_id', $request->produto_id)->count();
 
-        $request->validate($this->rules(), $this->feedback());
-
-        $dados = $request->all();
-
-        $produto = produto::create($dados);
-        return json_encode($produto);
+        if($imanges_qtd<3){
+        $imagem = $request->file('imagem');
+        $imagem_url = $imagem->store('imagem');
+        $imagemSalvar = imagem::create([
+            'produto_id' => $request->produto_id,
+            'caminho' => $imagem_url
+        ]);
+        return json_encode($imagemSalvar);
+    }else{
+        return 'Numero de imagens por produto excedido';
     }
+}
 
     /**
      * Display the specified resource.
@@ -53,20 +57,20 @@ class ProdutoController extends Controller
      */
     public function show($id)
     {
-        $produto = Produto::with('imagens')->find($id);
+        $produto = imagem::find($id);
         return json_encode($produto);
     }
 
-    // /**
-    //  * Show the form for editing the specified resource.
-    //  *
-    //  * @param  int  $id
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function edit($id)
-    // {
-    //     //
-    // }
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
 
     /**
      * Update the specified resource in storage.
@@ -77,7 +81,6 @@ class ProdutoController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         if ($request->method() === "PUT") {
             //tudo
             $request->validate($this->rules($id), $this->feedback());
@@ -94,9 +97,10 @@ class ProdutoController extends Controller
 
         $dados = $request->all();
 
-        $produto = Produto::find($id)->update($dados);
-        return json_encode($produto);
+        $imagem = imagem::find($id)->update($dados);
+        return json_encode($imagem);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -106,31 +110,25 @@ class ProdutoController extends Controller
      */
     public function destroy($id)
     {
-        $produto = Produto::find($id)->delete();
-        return json_encode($produto);
+        $imagem = imagem::find($id)->delete();
+        return json_encode($imagem);
     }
-
 
     public function rules($id = null)
     {
         //unique:produtos
 
         return [
-            'codigo' => 'required|min:3|max:10|unique:produtos,codigo,' . $id . '',
-            'categoria' => 'required',
-            'nome' => 'required',
-            'preco' => 'required',
-            'composicao' => 'required',
-            'tamanho' => 'required',
-            'qtdProduto' => 'required'
+            'produto_id' => 'required|exists:produtos',
+
         ];
     }
     public function feedback()
     {
         return [
             'required' => 'O campo :attribute deve ser preenchido',
-            'codigo.min' => 'Codigo muito pequeno',
-            'codigo.max' => 'Codigo muito grande'
+            'exists' => 'Produto não encontrado',
+
 
         ];
     }

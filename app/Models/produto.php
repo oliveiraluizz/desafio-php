@@ -20,4 +20,8 @@ class produto extends Model
 
     ];
 
+    public function imagens()
+    {
+        return $this->hasMany(imagem::class, 'produto_id', 'id');
+    }
 }
